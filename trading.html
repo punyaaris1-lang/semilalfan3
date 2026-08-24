@@ -3,205 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chart Analyzer Pro</title>
+    <title>Analisis XAU/USD (Gemini 3.5)</title>
     <style>
-        :root {
-            --bg-main: #f8fafc;
-            --surface: #ffffff;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --border-highlight: rgba(59, 130, 246, 0.4);
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            font-size: 13px;
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .hero {
-            width: 100%;
-            padding: 30px 20px;
-            text-align: center;
-            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .hero h1 {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            color: #0f172a;
-        }
-
-        .hero p {
-            color: var(--text-muted);
-            font-size: 12px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .dashboard {
-            width: 100%;
-            max-width: 800px;
-            padding: 0 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background-color: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            transition: border 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 30px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            background-color: #f8fafc;
-        }
-
-        .upload-area input[type="file"] {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .preview-container {
-            margin-top: 15px;
-            display: none;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .preview-container img {
-            width: 100%;
-            display: block;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin-top: 15px;
-        }
-
-        button:disabled {
-            background-color: #cbd5e1;
-            cursor: not-allowed;
-            color: #64748b;
-        }
-
-        .result-area {
-            display: none;
-        }
-        
-        .result-content {
-            margin-top: 15px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-size: 12px;
-            white-space: pre-wrap;
-            color: #334155;
-            line-height: 1.8;
-        }
-
-        .loader {
-            display: none;
-            text-align: center;
-            font-size: 12px;
-            color: var(--primary);
-            margin-top: 15px;
-            font-weight: 500;
-        }
+        body { font-family: sans-serif; padding: 20px; text-align: center; background: #f8fafc; color: #1e293b; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+        button { padding: 14px 20px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 15px; cursor: pointer; }
+        button:disabled { background: #94a3b8; }
+        #result { margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 8px; font-size: 13px; text-align: left; white-space: pre-wrap; display: none; border: 1px solid #cbd5e1; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-    <div class="hero">
-        <h1>Chart Analyzer</h1>
-        <p>Unggah tangkapan layar grafik untuk mendapatkan analisis teknikal.</p>
+    <div class="card">
+        <h3>Analisis Chart XAU/USD</h3>
+        <p style="font-size: 12px; color: #64748b; margin-top: -10px;">Powered by Gemini 3.5 Flash</p>
+        <input type="file" id="imageInput" accept="image/jpeg, image/png" style="margin-bottom: 15px; width: 100%;">
+        <button id="analyzeBtn" disabled>Analisis Sekarang</button>
+        <div id="result">Menganalisis pola grafik...</div>
     </div>
-
-    <div class="dashboard">
-        <div class="card">
-            <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #475569; font-size: 11px; text-transform: uppercase;">Target Analisis</label>
-            
-            <div class="upload-area" id="dropZone">
-                <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp">
-                <div id="uploadText">
-                    <p style="color: #1e293b; font-weight: 500; margin-bottom: 5px;">Ketuk untuk upload gambar</p>
-                    <p style="color: #64748b; font-size: 11px;">Format: JPG, PNG</p>
-                </div>
-            </div>
-
-            <div class="preview-container" id="previewContainer">
-                <img id="imagePreview" src="" alt="Chart Preview">
-            </div>
-
-            <button id="analyzeBtn" disabled>Analisis Grafik Sekarang</button>
-            <div class="loader" id="loader">Menganalisis pola grafik... mohon tunggu sekitar 5-10 detik.</div>
-        </div>
-
-        <div class="card result-area" id="resultArea">
-            <label style="color: #3b82f6; font-weight: 600; font-size: 11px; text-transform: uppercase;">Hasil Analisis Teknikal</label>
-            <div class="result-content" id="resultContent"></div>
-        </div>
-    </div>
-
     <script>
-        // API KEY TELAH DISIMPAN DI SINI
-        const MY_GEMINI_API_KEY = "AQ.Ab8RN6IBfjo-WoNwyXzYlcyP5QqCF9CB3lVpW85Aw-ovd872rw";
+        // API Key AQ sudah terpasang
+        const MY_GEMINI_API_KEY = "AQ.Ab8RN6KUu-y_3DLQywHGIQg9RNEet_HLSRdCyvxLAx281LZ_fQ";
 
         const imageInput = document.getElementById('imageInput');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewContainer = document.getElementById('previewContainer');
         const analyzeBtn = document.getElementById('analyzeBtn');
-        const dropZone = document.getElementById('dropZone');
+        const resultDiv = document.getElementById('result');
         let base64Image = '';
 
         imageInput.addEventListener('change', function(e) {
@@ -210,9 +36,6 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     base64Image = event.target.result.split(',')[1];
-                    imagePreview.src = event.target.result;
-                    previewContainer.style.display = 'block';
-                    dropZone.style.display = 'none';
                     analyzeBtn.disabled = false;
                 };
                 reader.readAsDataURL(file);
@@ -220,35 +43,22 @@
         });
 
         analyzeBtn.addEventListener('click', async function() {
-            if (!MY_GEMINI_API_KEY) {
-                alert('API Key tidak ditemukan.');
-                return;
-            }
-
-            analyzeBtn.style.display = 'none';
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('resultArea').style.display = 'none';
+            analyzeBtn.disabled = true;
+            resultDiv.style.display = 'block';
+            resultDiv.innerText = "Memproses data ke server... mohon tunggu.";
 
             try {
-                const prompt = "Analisa chart trading ini secara profesional. Berikan respon dalam Bahasa Indonesia. Format balasan: 1. Arah Tren Saat ini (Bullish/Bearish/Sideways), 2. Analisis Indikator (sebutkan apa yang terlihat), 3. Potensi Support dan Resistance, 4. Saran Skenario Trading (Area Entry, Take Profit, dan Stop Loss). Bersikap objektif dan ingatkan risiko.";
-                
-                // PERUBAHAN: Key dimasukkan langsung ke URL endpoint
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MY_GEMINI_API_KEY}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${MY_GEMINI_API_KEY}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                        // Header x-goog-api-key dihapus
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
                             parts: [
-                                { text: prompt },
-                                {
-                                    inline_data: {
-                                        mime_type: "image/jpeg",
-                                        data: base64Image
-                                    }
-                                }
+                                { 
+                                    // PERUBAHAN DI SINI: Prompt dipaksa sangat ketat dan singkat
+                                    text: "Bertindaklah sebagai bot asisten trading profesional khusus XAU/USD. Analisa chart ini dan berikan hasil SANGAT SINGKAT, langsung ke intinya (to the point) tanpa basa-basi atau penjelasan panjang. Gunakan format persis seperti ini:\n\n📈 TREN: [Bullish/Bearish/Sideways]\n🔍 POLA: [Sebutkan 1-2 pola utama secara singkat]\n🛡️ SUPPORT: [Sebutkan 1-2 angka kunci]\n⚔️ RESISTANCE: [Sebutkan 1-2 angka kunci]\n⚡ ENTRY: [Buy/Sell di area X, SL di Y, TP di Z]" 
+                                },
+                                { inline_data: { mime_type: "image/jpeg", data: base64Image } }
                             ]
                         }]
                     })
@@ -256,22 +66,17 @@
 
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
-
-                const resultText = data.candidates[0].content.parts[0].text;
+                if (data.error) throw new Error(data.error.message);
                 
-                document.getElementById('resultContent').innerText = resultText;
-                document.getElementById('resultArea').style.display = 'block';
+                resultDiv.innerText = "Sinyal Terdeteksi:\n\n" + data.candidates[0].content.parts[0].text;
                 
             } catch (error) {
-                alert('Terjadi kesalahan: ' + error.message);
+                resultDiv.innerText = "ERROR:\n" + error.message;
             } finally {
-                analyzeBtn.style.display = 'block';
-                document.getElementById('loader').style.display = 'none';
+                analyzeBtn.disabled = false;
             }
         });
     </script>
+
 </body>
 </html>
