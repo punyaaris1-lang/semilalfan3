@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spatial UI - MLU EV Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #FFFFFF;
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --gold-gradient: linear-gradient(135deg, #E2B75A 0%, #B8862D 100%);
+            --blue-gradient: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+            overflow: hidden; /* Mencegah scroll akibat siluet besar */
+            position: relative;
+        }
+
+        /* --- BACKGROUND ANIMATION ORBS --- */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.5;
+            z-index: -2;
+            animation: floatOrb 10s infinite ease-in-out alternate;
+        }
+        .orb-1 {
+            width: 300px; height: 300px;
+            background: #E2B75A;
+            top: -50px; left: -100px;
+        }
+        .orb-2 {
+            width: 250px; height: 250px;
+            background: #38BDF8;
+            bottom: -50px; right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.2); }
+        }
+
+        /* --- SILHOUETTE MOTOR --- */
+        .motor-silhouette {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Scale 1.6 memperbesar motor melebihi layar */
+            transform: translate(-50%, -50%) scale(1.6);
+            width: 100%;
+            max-width: 600px;
+            /* Merubah gambar asli menjadi siluet abu-abu transparan */
+            filter: brightness(0) opacity(0.06);
+            z-index: -1;
+            pointer-events: none; /* Agar tidak menutupi klik tombol */
+            object-fit: contain;
+        }
+
+        .dashboard-wrapper {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+        }
+
+        /* --- SPATIAL GLASS CARD --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 32px 24px;
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.08), inset 0 0 0 1px rgba(255,255,255,0.5);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        @keyframes slideUp { to { transform: translateY(0); opacity: 1; } }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
+        }
+
+        .avatar-ring {
+            position: relative; width: 76px; height: 76px;
+            border-radius: 50%; background: var(--gold-gradient);
+            padding: 3px; box-shadow: 0 10px 20px rgba(226, 183, 90, 0.3);
+        }
+        .avatar-inner {
+            width: 100%; height: 100%; background: #fff; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 28px; color: #B8862D;
+        }
+        .badge {
+            position: absolute; bottom: 0; right: -5px;
+            background: var(--text-dark); color: #fff;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            border: 3px solid #fff; font-size: 10px;
+        }
+
+        .profile-info h1 {
+            font-family: 'Syncopate', sans-serif; font-size: 16px; font-weight: 700;
+            background: var(--gold-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; margin-bottom: 6px; letter-spacing: -0.5px;
+        }
+        .profile-info p {
+            font-family: monospace; font-size: 12px; color: var(--text-muted); font-weight: 600;
+            background: rgba(255,255,255,0.7); padding: 4px 10px; border-radius: 8px; display: inline-block;
+        }
+
+        /* --- ENERGY/DAYS PROGRESS BAR --- */
+        .progress-container {
+            background: rgba(255,255,255,0.7); border-radius: 20px; padding: 20px;
+            border: 1px solid rgba(255,255,255,0.8); margin-bottom: 24px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px;
+        }
+        .progress-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;}
+        .progress-value { font-size: 24px; font-weight: 800; color: var(--text-dark); display: flex; align-items: baseline; gap: 4px; line-height: 1;}
+        .progress-value span { font-size: 13px; color: var(--text-muted); font-weight: 600;}
+
+        .track {
+            width: 100%; height: 12px; background: rgba(15, 23, 42, 0.05);
+            border-radius: 20px; position: relative; overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .fill {
+            height: 100%; width: 0%; background: var(--gold-gradient);
+            border-radius: 20px; position: relative;
+            animation: fillBar 2s cubic-bezier(0.1, 0.8, 0.2, 1) forwards 0.5s;
+        }
+        .fill::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes fillBar { to { width: 45%; } } /* 454 dari 1009 */
+        @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
+
+        /* --- FLOATING PAYMENT LIST --- */
+        .payment-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .pay-item {
+            background: rgba(255,255,255,0.9); border: 1px solid #FFF; border-radius: 20px;
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pay-item:hover, .pay-item:active {
+            transform: scale(1.02); box-shadow: 0 15px 30px rgba(226, 183, 90, 0.15); border-color: #E2B75A;
+        }
+
+        .pay-info { display: flex; align-items: center; gap: 14px; }
+        .pay-icon {
+            width: 44px; height: 44px; background: var(--bg-base); border-radius: 14px;
+            display: flex; justify-content: center; align-items: center; color: #38BDF8;
+            font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .pay-details h4 { font-size: 14px; font-weight: 800; color: var(--text-dark); margin-bottom: 2px;}
+        .pay-details p { font-family: monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px;}
+
+        .btn-action {
+            background: var(--text-dark); color: #fff; border: none; padding: 10px 20px;
+            border-radius: 12px; font-family: inherit; font-size: 13px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 8px 16px rgba(15, 23, 42, 0.2); transition: all 0.2s;
+        }
+        .btn-action.primary { background: var(--gold-gradient); box-shadow: 0 8px 16px rgba(226, 183, 90, 0.25); color: #000;}
+
+        /* Data Pribadi */
+        .personal-data { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;}
+        .data-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 600; padding: 10px 16px;
+            background: rgba(255,255,255,0.65); border-radius: 12px;
+        }
+        .data-row span:first-child { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;}
+    </style>
+</head>
+<body>
+
+    <!-- Latar Belakang Animasi -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    
+    <!-- Siluet Motor Raksasa -->
+    <img src="1000449698.png" class="motor-silhouette" alt="Motor Silhouette">
+
+    <div class="dashboard-wrapper">
+        
+        <div class="glass-card">
+            
+            <!-- Header Profil -->
+            <div class="profile-header">
+                <div class="avatar-ring">
+                    <div class="avatar-inner">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="badge"><i class="fa-solid fa-check"></i></div>
+                </div>
+                <div class="profile-info">
+                    <h1>M RIZKY FIRDAUS</h1>
+                    <p>MKMAAB2C0SJ000467</p>
+                </div>
+            </div>
+
+            <!-- Data Pribadi Kompak -->
+            <div class="personal-data">
+                <div class="data-row">
+                    <span>Email</span>
+                    <span>damesdame99@gmail.com</span>
+                </div>
+                <div class="data-row">
+                    <span>Telepon</span>
+                    <span>+62 856-9153-6957</span>
+                </div>
+                <div class="data-row" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+                    <span>Alamat Terdaftar</span>
+                    <span style="color: var(--text-muted); line-height: 1.4;">Jl Masjid Nurul Iman RT 06/04 No.103<br>Desa Waru, Kec. Parung, Bogor</span>
+                </div>
+            </div>
+
+            <!-- Bar Progress Masa Aktif -->
+            <div class="progress-container">
+                <div class="progress-header">
+                    <div class="progress-title">Siklus Aktif</div>
+                    <div class="progress-value">454 <span>/ 1009 Hari</span></div>
+                </div>
+                <div class="track">
+                    <div class="fill"></div>
+                </div>
+            </div>
+
+            <!-- List Tagihan Mengambang -->
+            <div class="payment-list">
+                <div class="pay-item">
+                    <div class="pay-info">
+                        <div class="pay-icon" style="color: #E2B75A;"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                        <div class="pay-details">
+                            <h4>Tagihan 2 Sep 2026</h4>
+                            <p>RTO/MMN/09/26/1003</p>
+                        </div>
+                    </div>
+                    <button class="btn-action primary">Bayar</button>
+                </div>
+
+                <div class="pay-item">
+                    <div class="pay-info">
+                        <div class="pay-icon"><i class="fa-solid fa-receipt"></i></div>
+                        <div class="pay-details">
+                            <h4>Tagihan 1 Sep 2026</h4>
+                            <p>RTO/MMN/09/26/0358</p>
+                        </div>
+                    </div>
+                    <button class="btn-action">Detail</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
